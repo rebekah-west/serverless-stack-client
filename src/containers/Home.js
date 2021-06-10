@@ -7,6 +7,12 @@ import { API } from "aws-amplify";
 import { BsPencilSquare } from "react-icons/bs";
 import { LinkContainer } from "react-router-bootstrap";
 
+import Form from "react-bootstrap/Form";
+import LoaderButton from "../components/LoaderButton";
+import config from "../config";
+import "./Notes.css";
+import Nav from "react-bootstrap/esm/Nav";
+
 export default function Home() {
   const [notes, setNotes] = useState([]);
   const { isAuthenticated } = useAppContext();
@@ -20,6 +26,7 @@ export default function Home() {
   
       try {
         const notes = await loadNotes();
+        console.log(notes);
         setNotes(notes);
       } catch (e) {
         onError(e);
@@ -31,8 +38,32 @@ export default function Home() {
     onLoad();
   }, [isAuthenticated]);
   
-  function loadNotes() {
-    return API.get("notes", "/notes");
+  async function loadNotes() {
+    const item = await API.get("notes", "/notes");
+    console.log(item)
+    return item;
+  }
+
+  async function saveNote(note, key) {
+    return await API.put("notes", `/notes/${key}`, {
+      body: note
+    });
+  }
+
+  async function handleSubmit(event, note){
+    //event.preventDefault();
+    // event.stopPropagation();
+    console.log(event);
+    setIsLoading(true);
+    try {  
+      await saveNote({
+        ...note,
+        lastWorn: Date.now()
+      }, note.key); 
+    } catch (e) {
+      onError(e); 
+    }
+    setIsLoading(false);
   }
 
   function renderNotesList(notes) {
@@ -44,18 +75,37 @@ export default function Home() {
             <span className="ml-2 font-weight-bold">Create a new note</span>
           </ListGroup.Item>
         </LinkContainer>
-        {notes.map(({ noteId, content, createdAt }) => (
-          <LinkContainer key={noteId} to={`/notes/${noteId}`}>
-            <ListGroup.Item action>
-              <span className="font-weight-bold">
-                {content.trim().split("\n")[0]}
-              </span>
+        {notes.map((note) => (
+          <ListGroup.Item as="div" key={note.noteId} action>
+            <LinkContainer to={`/notes/${note.noteId}`}>
+              <Nav.Link>
+                <span className="font-weight-bold">
+                  {note.content?.trim().split("\n")[0]}
+                </span>
+                <br />
+                <span className="text-muted">
+                  Created At: {new Date(note.createdAt).toLocaleString()}
+                </span>
+                <br />
+                <span className="text-muted">
+                  Last Updated: {new Date(note.lastModified).toLocaleString()}
+                </span>
+                <br />
+              </Nav.Link>
+              </LinkContainer>
+              <Form onSubmit={(e) => handleSubmit(e, note)}>
+                <LoaderButton
+                  block
+                  size="lg"
+                  type="submit"
+                  isLoading={isLoading}
+                >
+                  Wear
+                </LoaderButton>
+              </Form>
               <br />
-              <span className="text-muted">
-                Created: {new Date(createdAt).toLocaleString()}
-              </span>
-            </ListGroup.Item>
-          </LinkContainer>
+          </ListGroup.Item>
+          
         ))}
       </>
     );
