@@ -3,7 +3,17 @@
     text-align: center;
   }
   
-  .Home .lander h1 {
+.Home .lander h1 {
     font-family: "Open Sans", sans-serif;
     font-weight: 600;
   }
+
+div.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    padding: 50px;
+    text-align: center;
+    font-size: 25px;
+  }
+  

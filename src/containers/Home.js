@@ -9,14 +9,17 @@ import { LinkContainer } from "react-router-bootstrap";
 
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
-import config from "../config";
 import "./Notes.css";
 import Nav from "react-bootstrap/esm/Nav";
+import { useHistory } from "react-router-dom";
+
+
 
 export default function Home() {
   const [notes, setNotes] = useState([]);
   const { isAuthenticated } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
+  const history = useHistory();
 
   useEffect(() => {
     async function onLoad() {
@@ -26,7 +29,6 @@ export default function Home() {
   
       try {
         const notes = await loadNotes();
-        console.log(notes);
         setNotes(notes);
       } catch (e) {
         onError(e);
@@ -40,30 +42,29 @@ export default function Home() {
   
   async function loadNotes() {
     const item = await API.get("notes", "/notes");
-    console.log(item)
     return item;
   }
 
-  async function saveNote(note, key) {
-    return await API.put("notes", `/notes/${key}`, {
+  async function saveNote(note) {
+    return await API.put("notes", `/notes/${note.noteId}`, {
       body: note
     });
   }
 
   async function handleSubmit(event, note){
-    //event.preventDefault();
-    // event.stopPropagation();
-    console.log(event);
+    event.preventDefault();
     setIsLoading(true);
     try {  
       await saveNote({
         ...note,
-        lastWorn: Date.now()
-      }, note.key); 
+        lastWorn: Date.now(),
+      }); 
+      history.push("/");
+      window.location.reload();
     } catch (e) {
       onError(e); 
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }
 
   function renderNotesList(notes) {
@@ -84,11 +85,11 @@ export default function Home() {
                 </span>
                 <br />
                 <span className="text-muted">
-                  Created At: {new Date(note.createdAt).toLocaleString()}
+                  Last Updated: {new Date(note.lastModified).toLocaleString()}
                 </span>
                 <br />
                 <span className="text-muted">
-                  Last Updated: {new Date(note.lastModified).toLocaleString()}
+                  Last Worn: {new Date(note.lastWorn).toLocaleString()}
                 </span>
                 <br />
               </Nav.Link>
@@ -105,11 +106,11 @@ export default function Home() {
               </Form>
               <br />
           </ListGroup.Item>
-          
         ))}
       </>
     );
   }
+
 
   function renderLander() {
     return (

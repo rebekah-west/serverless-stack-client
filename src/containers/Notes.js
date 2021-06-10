@@ -59,7 +59,7 @@ export default function Notes() {
     });
   }
   
-  async function handleSubmit(event) {
+  async function handleSubmit(event, note) {
     let attachment;
   
     event.preventDefault();
@@ -81,8 +81,10 @@ export default function Notes() {
       }
   
       await saveNote({
+        ...note,
         content,
-        attachment: attachment || note.attachment
+        attachment: attachment || note.attachment,
+        lastModified: Date.now()
       });
       history.push("/");
     } catch (e) {
@@ -120,7 +122,7 @@ export default function Notes() {
   return (
     <div className="Notes">
       {note && (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={(e) => handleSubmit(e, note)}>
           <Form.Group controlId="content">
             <Form.Control
               as="textarea"
