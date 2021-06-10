@@ -2,17 +2,17 @@ const config = {
     MAX_ATTACHMENT_SIZE: 5000000,
     s3: {
       REGION: "us-east-1",
-      BUCKET: "serverless-bucket-tutorial-rw",
+      BUCKET: "armoire-uploads",
     },
     apiGateway: {
       REGION: "us-east-1",
-      URL: "https://dilwl3wpt4.execute-api.us-east-1.amazonaws.com/prod",
+      URL: "https://xz9hfnuudl.execute-api.us-east-1.amazonaws.com/dev",
     },
     cognito: {
       REGION: "us-east-1",
-      USER_POOL_ID: "us-east-1_v6pQIqLFA",
-      APP_CLIENT_ID: "1g11igrt9q4cpipfpas00aejh3",
-      IDENTITY_POOL_ID: "us-east-1:e5c9d2d2-61f7-4444-8cb4-7b353d7a5073",
+      USER_POOL_ID: "us-east-1_Ns4UW39Tq",
+      APP_CLIENT_ID: "5fj0m2d8tbv2ss06u6k31hc4ee",
+      IDENTITY_POOL_ID: "us-east-1:f7cdc236-182c-436e-90cc-7edd6248bc95",
     },
   };
   
